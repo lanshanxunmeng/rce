@@ -41,6 +41,17 @@ from twisted.python import log
 # rce specific imports
 from rce.util.process import execute
 
+#lxc 1.0.9 needed,this form /usr/share/lxc/config/ubuntu.common.conf
+_CONFIG_CONSOLE = """
+lxc.devttydir = lxc
+lxc.tty = 4
+lxc.pts = 1024
+"""
+
+#ubuntu 14.04 config need mount fstore ,otherwise no booting after configure network device 
+_CONFIG_MOUNT_TRUSTY = """
+lxc.mount.entry = /sys/fs/pstore sys/fs/pstore none bind,optional 0 0
+"""
 
 _CONFIG_CGROUP = """
 lxc.cgroup.devices.deny = a
@@ -239,6 +250,8 @@ class Container(object):
 
             # Write cgroup config
             f.write(_CONFIG_CGROUP)
+            f.write(_CONFIG_CONSOLE)
+            f.write(_CONFIG_MOUNT_TRUSTY)
 
             # Write capabilities config
             # TODO: Add at some point?
